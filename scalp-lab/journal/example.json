@@ -1,0 +1,56 @@
+{
+  "session": {
+    "date": "2025-06-10",
+    "instrument": "MES1!",
+    "timeframe": "5",
+    "replay_start": "2025-06-10T09:30:00-04:00",
+    "rules_version": "rules.json"
+  },
+  "trades": [
+    {
+      "id": 1,
+      "time": "09:45",
+      "setup": "pullback_trend",
+      "direction": "long",
+      "reason": "Prix > EMA20 et VWAP, pullback sur EMA20, bougie 09:40 clôture haussière.",
+      "entry": 6021.25,
+      "stop": 6019.25,
+      "target": 6024.25,
+      "exit": 6024.25,
+      "exit_reason": "target",
+      "bars_in_trade": 3,
+      "ticks": 12,
+      "tag": ""
+    },
+    {
+      "id": 2,
+      "time": "10:10",
+      "setup": "range_reject",
+      "direction": "short",
+      "reason": "Rejet du PDH 6030.00, mèche haute 60 % de la bougie.",
+      "entry": 6028.50,
+      "stop": 6030.50,
+      "target": 6025.50,
+      "exit": 6030.50,
+      "exit_reason": "stop",
+      "bars_in_trade": 2,
+      "ticks": -8,
+      "tag": ""
+    },
+    {
+      "id": 3,
+      "time": "10:35",
+      "setup": "",
+      "direction": "long",
+      "reason": "",
+      "entry": 6026.00,
+      "stop": 6024.00,
+      "target": 6029.00,
+      "exit": 6026.75,
+      "exit_reason": "time",
+      "bars_in_trade": 6,
+      "ticks": 3,
+      "tag": "undisciplined"
+    }
+  ]
+}

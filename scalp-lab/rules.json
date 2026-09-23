@@ -1,0 +1,38 @@
+{
+  "_comment": "Règles écrites avant le premier trade. Toute modification se fait entre deux sessions, jamais pendant.",
+
+  "instrument": "MES1!",
+  "timeframe": "5",
+  "session_window": { "start": "09:30", "end": "11:30", "timezone": "America/New_York" },
+
+  "setups": {
+    "pullback_trend": {
+      "description": "Prix au-dessus (long) / en dessous (short) de l'EMA 20 et de la VWAP, pullback vers l'EMA 20 puis clôture de bougie dans le sens de la tendance.",
+      "indicators": ["Moving Average Exponential (20)", "VWAP"]
+    },
+    "range_reject": {
+      "description": "Rejet net d'un niveau clé (PDH/PDL, ouverture) avec mèche > 50 % de la bougie, entrée à la clôture de la bougie de rejet.",
+      "indicators": ["PDH/PDL", "Session open"]
+    }
+  },
+
+  "risk": {
+    "stop_ticks": 8,
+    "target_ticks": 12,
+    "min_reward_risk": 1.5,
+    "max_bars_in_trade": 6,
+    "max_consecutive_losses": 3,
+    "max_daily_loss_ticks": 30,
+    "max_trades_per_session": 8,
+    "one_position_at_a_time": true,
+    "never_average_down": true,
+    "never_move_stop_against": true
+  },
+
+  "fees": {
+    "_comment": "Valeurs indicatives micro E-mini, à ajuster à ton broker.",
+    "tick_value": 1.25,
+    "commission_per_side": 0.62,
+    "assumed_slippage_ticks_per_side": 0.5
+  }
+}
