@@ -55,8 +55,8 @@ Use `study_filter` parameter to target a specific indicator by name substring (e
 1. `replay_start` with `date: "2025-03-01"` → enter replay mode
 2. `replay_step` → advance one bar
 3. `replay_autoplay` → auto-advance (set speed with `speed` param in ms)
-4. `replay_trade` with `action: "buy"/"sell"/"close"` → execute trades
-5. `replay_status` → check position, P&L, current date
+4. `replay_trade` with `action: "buy"/"sell"/"close"` (+ optional `qty`, default 1) → execute trades; returns `success: false` if the order was not filled
+5. `replay_status` → check position (side/qty/avg_price), realized P&L, last execution, current date
 6. `replay_stop` → return to realtime
 
 ### "Screen multiple symbols"

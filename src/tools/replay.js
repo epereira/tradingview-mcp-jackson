@@ -28,9 +28,10 @@ export function registerReplayTools(server) {
   });
 
   server.tool('replay_trade', 'Execute a trade action in replay mode (buy, sell, or close position)', {
-    action: z.string().describe('Trade action: buy, sell, or close'),
-  }, async ({ action }) => {
-    try { return jsonResult(await core.trade({ action })); }
+    action: z.enum(['buy', 'sell', 'close']).describe('Trade action: buy, sell, or close'),
+    qty: z.coerce.number().positive().optional().describe('Number of contracts/shares for buy/sell (default 1). Ignored for close.'),
+  }, async ({ action, qty }) => {
+    try { return jsonResult(await core.trade({ action, qty: qty ?? 1 })); }
     catch (err) { return jsonResult({ success: false, error: err.message }, true); }
   });
 

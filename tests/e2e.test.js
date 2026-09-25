@@ -22,6 +22,8 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import CDP from 'chrome-remote-interface';
+import * as replayCore from '../src/core/replay.js';
+import { disconnect as disconnectCore } from '../src/connection.js';
 
 let client;
 let Runtime;
@@ -1163,6 +1165,7 @@ val = array.get(a, 5)`;
           await sleep(500);
         }
       } catch {}
+      try { await disconnectCore(); } catch {}
     });
 
     it('replay_start — enter replay mode', async () => {
@@ -1203,16 +1206,29 @@ val = array.get(a, 5)`;
       }
     });
 
-    it('replay_trade — buy action', async () => {
+    it('replay_trade — buy then close through core module', async () => {
       const started = await evaluate(wv(`${REPLAY_API}.isReplayStarted()`));
       if (!started) return;
 
-      await evaluate(`${REPLAY_API}.buy()`);
-      const position = await evaluate(wv(`${REPLAY_API}.position()`));
-      assert.ok(position !== undefined, 'Position returned after buy');
+      // Go through the real implementation: it must initialise the replay trading
+      // model, pass a quantity, and report the resulting position (regression for
+      // buy()/sell() silently doing nothing and position always reading null).
+      const buy = await replayCore.trade({ action: 'buy', qty: 1 });
+      assert.equal(buy.success, true, `buy succeeded: ${buy.error ?? ''}`);
+      assert.ok(buy.position, 'Position reported after buy');
+      assert.equal(buy.position.side, 'long', 'Position is long');
+      assert.equal(buy.position.qty, 1, 'Position qty is 1');
 
-      // Close position
-      try { await evaluate(`${REPLAY_API}.closePosition()`); } catch {}
+      const status = await replayCore.status();
+      assert.ok(status.position, 'replay_status sees the open position');
+
+      const close = await replayCore.trade({ action: 'close' });
+      assert.equal(close.success, true, 'close succeeded');
+      assert.equal(close.position, null, 'Flat after close');
+
+      const closeAgain = await replayCore.trade({ action: 'close' });
+      assert.equal(closeAgain.success, true, 'close with no position is a no-op');
+      assert.equal(closeAgain.position, null, 'Still flat');
     });
 
     it('replay_status — get replay state', async () => {
@@ -1235,7 +1251,9 @@ val = array.get(a, 5)`;
       if (!started) return;
 
       await evaluate(`${REPLAY_API}.stopReplay()`);
-      await evaluate(`${REPLAY_API}.goToRealtime()`);
+      // goToRealtime() asserts inside TradingView when replay is already fully
+      // stopped (e.g. after a trading session with executions), so best effort.
+      try { await evaluate(`${REPLAY_API}.goToRealtime()`); } catch {}
       await evaluate(`${REPLAY_API}.hideReplayToolbar()`);
       await sleep(500);
 
