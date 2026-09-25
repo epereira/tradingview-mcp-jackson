@@ -29,6 +29,17 @@ replay_status      # position, P&L courant
 À chaque trade, Claude écrit l'entrée de journal (voir `journal/example.json`)
 **avant** de passer à la bougie suivante.
 
+## Leçons de la session 1 (2025-03-18)
+
+- **Jamais `replay_autoplay` pour rejoindre le début de fenêtre** : il dépasse
+  (6 bougies perdues = 30 min). Choisir `replay_start` avec une date/heure juste
+  avant `session_window.start`, puis `replay_step` bougie par bougie uniquement.
+- **Éviter les dates de roll de contrat** (3e vendredi de mars/juin/sept/déc,
+  ± 3 jours) : PDH/PDL deviennent inutilisables et le setup `range_reject` est
+  éteint. Préférer des dates en milieu de trimestre.
+- Vérifier avec `replay_status` que `current_date` est bien à 09:30 avant le
+  premier trade ; sinon, journaliser l'heure réelle de début.
+
 ## Garde-fous (non négociables)
 
 - Replay uniquement. Aucun ordre en temps réel.
